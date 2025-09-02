@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# iOS-tema4
-=======
 # Tema 4: Controles, Layout y Vistas en SwiftUI
 
 Este proyecto es una demo didáctica para mostrar los conceptos principales de SwiftUI relacionados con controles, layouts y vistas. Está pensado para estudiantes que quieren entender cómo funcionan los elementos básicos de interfaz en iOS usando SwiftUI.
@@ -21,4 +18,3 @@ Si tienes dudas o quieres mejorar la demo, ¡adelante! Este proyecto es un punto
 ---
 
 *Creado por Jesús Garza para la clase de Desarrollo de Apps iOS en Tecmilenio.*
->>>>>>> e5af6ce (Demo Tema 4: Controles, Layout y Vistas en SwiftUI)
