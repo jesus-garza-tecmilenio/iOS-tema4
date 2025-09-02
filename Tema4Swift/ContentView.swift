@@ -1,20 +1,199 @@
-# Tema 4: Controles, Layout y Vistas en SwiftUI
+//  ContentView.swift
+//  Tema4Swift
+//
+//  Created by JESUS GARZA on 02/09/25.
+//
 
-Este proyecto es una demo didáctica para mostrar los conceptos principales de SwiftUI relacionados con controles, layouts y vistas. Está pensado para estudiantes que quieren entender cómo funcionan los elementos básicos de interfaz en iOS usando SwiftUI.
+import SwiftUI
 
-## ¿Qué incluye?
-- **Pantalla principal** con título, botón para cambiar el color de fondo, toggle para modo oscuro, slider para ajustar el tamaño de texto, y un campo de texto para ingresar tu nombre.
-- **Gestos**: Un ícono de estrella que responde a tap y long press, mostrando mensajes diferentes.
-- **Ejemplos de layouts**: Subvistas con ejemplos de VStack, HStack y ZStack, usando Spacer y padding para ilustrar alineación y espaciado.
-- **Modo oscuro**: Todos los controles y textos se adaptan para verse bien en modo claro y oscuro.
-- **ScrollView** para que la demo sea cómoda en cualquier dispositivo.
-- **Previews** para cada vista, facilitando el diseño y pruebas.
+struct ContentView: View {
+    // Estado para el color de fondo
+    @State private var bgColor: Color? = nil // nil = usar color automático
+    // Estado para el modo oscuro
+    @State private var isDarkMode: Bool = false
+    // Estado para el tamaño del texto
+    @State private var textSize: Double = 20
+    // Estado para el nombre ingresado
+    @State private var name: String = ""
+    // Estado para el mensaje de gestos
+    @State private var gestureMessage: String = ""
+    // Estado para saber si el usuario cambió el fondo manualmente
+    @State private var isCustomBg: Bool = false
+    
+    // Colores adaptativos para textos y fondos
+    var mainTextColor: Color { isDarkMode ? .white : .black }
+    var secondaryTextColor: Color { isDarkMode ? .yellow : .accentColor }
+    var fieldBackground: Color { isDarkMode ? Color(.systemGray5) : .white }
+    var buttonBackground: Color { isDarkMode ? Color(.systemGray3) : Color.accentColor.opacity(0.2) }
+    var dividerColor: Color { isDarkMode ? .white.opacity(0.5) : .gray.opacity(0.5) }
+    // Fondo adaptativo si no es personalizado
+    var adaptiveBgColor: Color {
+        if let custom = bgColor, isCustomBg {
+            return custom
+        } else {
+            return isDarkMode ? .black : .white
+        }
+    }
+    
+    var body: some View {
+        ZStack {
+            // Fondo dinámico adaptativo
+            adaptiveBgColor
+                .ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Título principal
+                    Text("Demo Controles y Layout en SwiftUI")
+                        .font(.title)
+                        .bold()
+                        .foregroundColor(mainTextColor)
+                    // Botón para cambiar el color de fondo
+                    Button(action: {
+                        if !isCustomBg || bgColor == nil || bgColor == .white || bgColor == .black {
+                            bgColor = .blue.opacity(0.2)
+                            isCustomBg = true
+                        } else {
+                            bgColor = nil
+                            isCustomBg = false
+                        }
+                    }) {
+                        Text(isCustomBg ? "Restaurar fondo automático" : "Cambiar color de fondo")
+                            .padding()
+                            .background(buttonBackground)
+                            .foregroundColor(mainTextColor)
+                            .cornerRadius(8)
+                    }
+                    // Toggle para modo oscuro
+                    Toggle(isOn: $isDarkMode) {
+                        Text("Modo Oscuro")
+                            .foregroundColor(mainTextColor)
+                    }
+                    .padding(.horizontal)
+                    // Slider para ajustar tamaño de texto
+                    VStack {
+                        Slider(value: $textSize, in: 16...40, step: 1) {
+                            Text("Tamaño del texto")
+                        }
+                        .accentColor(secondaryTextColor)
+                        Text("Tamaño actual: \(Int(textSize))")
+                            .foregroundColor(mainTextColor)
+                    }
+                    // TextField para ingresar nombre
+                    TextField("Ingresa tu nombre", text: $name)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                        .background(fieldBackground)
+                        .foregroundColor(mainTextColor)
+                    // Texto dinámico con el nombre
+                    Text("Hola, \(name)")
+                        .font(.system(size: CGFloat(textSize)))
+                        .foregroundColor(mainTextColor)
+                    // Ícono con gestos
+                    VStack {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.yellow)
+                            .onTapGesture {
+                                gestureMessage = "¡Tocaste la estrella!"
+                            }
+                            .onLongPressGesture {
+                                gestureMessage = "¡Presionaste largo la estrella!"
+                            }
+                        Text(gestureMessage)
+                            .foregroundColor(secondaryTextColor)
+                    }
+                    Divider()
+                        .background(dividerColor)
+                    // Ejemplos de layouts
+                    VStackExampleView(isDarkMode: isDarkMode)
+                    HStackExampleView(isDarkMode: isDarkMode)
+                    ZStackExampleView(isDarkMode: isDarkMode)
+                }
+                .padding()
+            }
+        }
+        // Cambia el esquema de color según el toggle
+        .preferredColorScheme(isDarkMode ? .dark : .light)
+    }
+}
 
-## ¿Cómo usarlo?
-Abre el proyecto en Xcode y ejecuta en el simulador. Puedes interactuar con todos los controles y ver cómo se comportan los layouts y el modo oscuro. El código está organizado y comentado para que puedas entender cada parte y modificarlo según tus necesidades.
+// Ejemplo de VStack con Spacer y padding
+struct VStackExampleView: View {
+    let isDarkMode: Bool
+    var body: some View {
+        VStack {
+            Text("Ejemplo VStack")
+                .font(.headline)
+                .foregroundColor(isDarkMode ? .white : .black)
+            Spacer()
+            Text("Elemento 1")
+                .foregroundColor(isDarkMode ? .white : .black)
+            Text("Elemento 2")
+                .foregroundColor(isDarkMode ? .white : .black)
+            Spacer()
+        }
+        .padding()
+        .background(isDarkMode ? Color.green.opacity(0.3) : Color.green.opacity(0.1))
+        .cornerRadius(10)
+    }
+}
 
-Si tienes dudas o quieres mejorar la demo, ¡adelante! Este proyecto es un punto de partida para experimentar con SwiftUI.
+#Preview {
+    VStackExampleView(isDarkMode: false)
+}
 
----
+// Ejemplo de HStack con Spacer y padding
+struct HStackExampleView: View {
+    let isDarkMode: Bool
+    var body: some View {
+        HStack {
+            Text("Ejemplo HStack")
+                .font(.headline)
+                .foregroundColor(isDarkMode ? .white : .black)
+            Spacer()
+            Image(systemName: "bolt.fill")
+                .foregroundColor(.blue)
+            Text("Elemento")
+                .foregroundColor(isDarkMode ? .white : .black)
+        }
+        .padding()
+        .background(isDarkMode ? Color.blue.opacity(0.3) : Color.blue.opacity(0.1))
+        .cornerRadius(10)
+    }
+}
 
-*Creado por Jesús Garza para la clase de Desarrollo de Apps iOS en Tecmilenio.*
+#Preview {
+    HStackExampleView(isDarkMode: false)
+}
+
+// Ejemplo de ZStack con fondo y texto superpuesto
+struct ZStackExampleView: View {
+    let isDarkMode: Bool
+    var body: some View {
+        ZStack {
+            (isDarkMode ? Color.purple.opacity(0.3) : Color.purple.opacity(0.1))
+            Text("Ejemplo ZStack")
+                .font(.headline)
+                .padding()
+                .foregroundColor(isDarkMode ? .white : .black)
+            VStack {
+                Spacer()
+                Text("Texto sobre fondo")
+                    .padding(8)
+                    .background(isDarkMode ? Color.black.opacity(0.7) : Color.white.opacity(0.7))
+                    .cornerRadius(8)
+                    .foregroundColor(isDarkMode ? .white : .black)
+            }
+        }
+        .frame(height: 100)
+        .cornerRadius(10)
+    }
+}
+
+#Preview {
+    ZStackExampleView(isDarkMode: false)
+}
+
+#Preview {
+    ContentView()
+}
